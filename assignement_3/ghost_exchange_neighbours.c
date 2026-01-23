@@ -184,3 +184,11 @@ int calculate_number_live_cells(int *matrix, int num_rows, int num_cols)
 
   return live_cells;
 }
+
+void get_total_live_cells(int *matrix, int num_rows, int num_cols, MPI_Comm comm)
+{
+  int local_live = calculate_number_live_cells(matrix, num_rows, num_cols);
+  int global_live = 0;
+
+  MPI_Reduce(&local_live, &global_live, 1, MPI_INT, MPI_SUM, 0, comm);
+}
