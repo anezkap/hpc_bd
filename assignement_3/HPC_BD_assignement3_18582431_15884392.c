@@ -20,33 +20,13 @@
 
 #define  MASTER		0
 #define MATRIX_SIZE 10
-
-int update(int subM[MATRIX_SIZE/2][MATRIX_SIZE], int row, int col){
-    int i, j, nsum = 0, temp[row][col]= {};
-    for (i = 0; i < row-2; i++)
-    {
-        for (j = 0; j < col-2; j++)
-        {
-            nsum = subM[i][j] + subM[i][j+1] + subM[i][j+2] + subM[i+2][j] +
-                subM[i+2][j+1] + subM[i+2][j+2] + subM[i+1][j] + subM[i+1][j+2];
-            if (subM[i+1][j+1] == 0 && nsum == 3)
-            {
-                temp[i+1][j+1] = 1;
-            }
-            else if (subM[i+1][j+1] == 1 && nsum >= 2 && nsum <= 3)
-            {
-                temp[i+1][j+1] = 1;
-            }
-        }
-    }
-    memcpy(subM, temp, sizeof(int) * row * col);
-}
+#define niter 3
 
 int main (int argc, char *argv[])
 // Main function for the program. `argc` and `argv` handle command-line arguments.
 {
     // Variables to store the number of ranks, rank, destination, tag, source, m (sub-matrix with contour input of update), newm (sub-matrix without contour output of update) and message count.
-    int i, j, proc, iter, nrank, rank, niter=10;
+    int i, j, proc, iter, nrank, rank;
 
     // Variables for message passing: `inmsg` is the received message, and `outmsg` is the message to send.
     char inmsg, outmsg='x', outmsg_1MB[1024*2056], inmsg_1MB[1024*2056];
@@ -86,9 +66,9 @@ int main (int argc, char *argv[])
         #define PATTERN_WIDTH 8
 
         uint8_t pattern[PATTERN_HEIGHT][PATTERN_WIDTH] = {
-            {0, 1, 0, 0, 0, 0, 0, 0},
-            {0, 0, 1, 0, 0, 0, 0, 0},
-            {1, 1, 1, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 1, 0},
+            {0, 1, 1, 1, 0, 0, 1, 0},
+            {0, 0, 0, 0, 0, 0, 1, 0},
             {0, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0},
@@ -96,7 +76,7 @@ int main (int argc, char *argv[])
             {0, 0, 0, 0, 0, 0, 0, 0}
         };
 
-        int niter, i, j, M[MATRIX_SIZE][MATRIX_SIZE] = {0}; // 2D array
+        int i, j, M[MATRIX_SIZE][MATRIX_SIZE] = {0}; // 2D array
         // initialize the pattern of our game of life implementation
         // implement the pattern in our initial grid
         for (i = 0; i < PATTERN_HEIGHT; i++) {
@@ -154,23 +134,42 @@ int main (int argc, char *argv[])
     
     MPI_Barrier(MPI_COMM_WORLD); // synchronize all processes before printing
 
-    sleep(rank*10);
+    sleep(rank*3);
     // print the chunk assigned to each process
     for (iter = 0; iter < niter; iter++)
     {
-        update(subM, MATRIX_SIZE/2,MATRIX_SIZE);
-
-        for (i = 0; i < MATRIX_SIZE/2; i++)
+        
+        printf("Process %d - Iteration %d - Sub-matrix:\n", rank, iter);
+        for (i = 0; i < MATRIX_SIZE/m+2; i++)
         {
-            for (j = 0; j < MATRIX_SIZE; j++)
+            for (j = 0; j < MATRIX_SIZE/n+2; j++)
             {
-                if (subM[i][j] == 0)
-                    printf("  ");
-                else
-                    printf("o ");
+                printf("%d ", subM[i][j]);
             }
             printf("\n");
         }
+
+        //update sub-matrix
+        int temp[MATRIX_SIZE/m+2][MATRIX_SIZE/n+2]= {};
+        for (i = 0; i < MATRIX_SIZE/m; i++)
+        {
+            for (j = 0; j < MATRIX_SIZE/n; j++)
+            {
+                int nsum = 0;
+                nsum = subM[i][j] + subM[i][j+1] + subM[i][j+2] + subM[i+2][j] +
+                    subM[i+2][j+1] + subM[i+2][j+2] + subM[i+1][j] + subM[i+1][j+2];
+                if (subM[i+1][j+1] == 0 && nsum == 3)
+                {
+                    temp[i+1][j+1] = 1;
+                }
+                else if (subM[i+1][j+1] == 1 && nsum >= 2 && nsum <= 3)
+                {
+                    temp[i+1][j+1] = 1;
+                }
+            }
+        }
+        memcpy(subM, temp, sizeof(int) * (MATRIX_SIZE/m + 2) * (MATRIX_SIZE/n + 2));
+
     }
 
     // Terminates the MPI environment. Must be the last MPI call in the program.
