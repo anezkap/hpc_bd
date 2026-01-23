@@ -2,7 +2,27 @@
 #include <stdlib.h>
 #include <assert.h>
 
-int *get_nbours(int pid, int m, int n);
+int *get_nbours (int pid, int m, int n)
+{
+  int *neighbours = (int *)malloc(4 * sizeof(int));
+  
+  // neighbours[0] = left, neighbours[1] = right
+  // neighbours[2] = up, neighbours[3] = down
+  
+  // Left: same row, column - 1
+  neighbours[0] = (pid % n == 0) ? -1 : pid - 1;
+  
+  // Right: same row, column + 1
+  neighbours[1] = (pid % n == n - 1) ? -1 : pid + 1;
+  
+  // Up: row - 1, same column
+  neighbours[2] = (pid < n) ? -1 : pid - n;
+  
+  // Down: row + 1, same column
+  neighbours[3] = (pid >= (m - 1) * n) ? -1 : pid + n;
+
+  return neighbours;
+}
 
 void test_get_nbours() {
   // Test case 1: 2x3 grid, process 0 (top-left corner)
