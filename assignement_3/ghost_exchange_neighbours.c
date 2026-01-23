@@ -176,7 +176,7 @@ int calculate_number_live_cells(int *matrix, int num_rows, int num_cols)
   live_cells = 0;
   for (int i = 1; i < num_rows - 1; i++) {
     for (int j = 1; j < num_cols - 1; j++) {
-      if (matrix[i * num_cols + j] == 1) {     TODO
+      if (matrix[i * num_cols + j] == 1) {
         live_cells++;
       }
     }
