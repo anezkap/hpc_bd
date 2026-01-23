@@ -1,0 +1,33 @@
+compiling application: HPC_BD_assignement3_18582431_15884392
+mpirun
+Running application: HPC_BD_assignement3_18582431_15884392
+Allocated tasks: 4
+Tasks per node: 2
+
+ proc 0's chunk 
+0 0 0 0 0 
+0 0 0 3 0 
+0 0 5 0 0 
+0 7 0 9 0 
+0 0 0 0 0 
+
+ proc 1's chunk 
+0 0 0 0 0 
+0 0 1 0 0 
+0 2 0 0 0 
+0 0 4 0 0 
+0 0 0 0 0 
+
+ proc 2's chunk 
+0 0 0 0 0 
+0 0 6 0 0 
+0 1 0 2 0 
+0 0 0 0 0 
+0 0 0 0 0 
+
+ proc 3's chunk 
+0 0 0 0 0 
+0 8 0 0 0 
+0 0 0 0 0 
+0 0 0 0 0 
+0 0 0 0 0 

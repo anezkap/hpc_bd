@@ -23,7 +23,7 @@ module load MPICH/4.3.0-GCC-14.2.0
 # Check if the argument is "clean"
 if [[ "$1" == "clean" ]]; then
     echo "Cleaning up executable files..."
-    rm -f mpi_bug1 mpi_bug2 mpi_bug3 mppi_bug4 mpi_bug5 mpi_bug6 mpi_bug7
+    rm -f HPC_BD_assignement3_18582431_15884392
     echo "Executable files removed."
     exit 0  # Exit after cleanup if only cleanup is requested
 fi
