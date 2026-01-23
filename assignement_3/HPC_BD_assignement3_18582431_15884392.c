@@ -20,7 +20,7 @@ int main (int argc, char *argv[])
 // Main function for the program. `argc` and `argv` handle command-line arguments.
 {
     // Variables to store the number of ranks, rank, destination, tag, source, m (sub-matrix with contour input of update), newm (sub-matrix without contour output of update) and message count.
-    int proc, iter, nrank, rank, dest, tag, source, newm, niter=10;
+    int i, j, proc, iter, nrank, rank, dest, tag, source, newm, comm, niter=10;
 
     // Variables for message passing: `inmsg` is the received message, and `outmsg` is the message to send.
     char inmsg, outmsg='x', outmsg_1MB[1024*2056], inmsg_1MB[1024*2056];
@@ -29,6 +29,9 @@ int main (int argc, char *argv[])
 
     // Structure to hold information about the status of an MPI operation.
     MPI_Status Stat;
+
+    // Variable to hold the request handle for non-blocking communication.
+    MPI_Request request;
 
     // Initializes the MPI environment. Must be called before any other MPI functions.
     MPI_Init(&argc,&argv);
@@ -50,7 +53,6 @@ int main (int argc, char *argv[])
 
     // initialize "subM": the local sub-matrix that each process will update
     int subM[MATRIX_SIZE/m + 2][MATRIX_SIZE/n + 2] = {};
-    //printf("I am rank %d out of %d ranks\n: hi", rank, nrank);
 
     // Logic for task with Master rank.
     if (rank == MASTER) {
@@ -58,11 +60,11 @@ int main (int argc, char *argv[])
         #define PATTERN_WIDTH 5
 
         uint8_t pattern[PATTERN_HEIGHT][PATTERN_WIDTH] = {
-            {0, 0, 3, 0, 1},
-            {0, 5, 0, 2, 0},
-            {7, 0, 9, 0, 4},
-            {0, 6, 0, 8, 0},
-            {1, 0, 2, 0, 0}
+            {0, 1, 2, 3, 4},
+            {0, 1, 2, 3, 4},
+            {0, 1, 2, 3, 4},
+            {0, 1, 2, 3, 4},
+            {0, 1, 2, 3, 4}
         };
 
         int niter, i, j, M[MATRIX_SIZE][MATRIX_SIZE] = {0}; // 2D array
@@ -74,11 +76,20 @@ int main (int argc, char *argv[])
             }
         }
 
+        // print initial matrix
+        printf("Initial Matrix M:\n");
+        for (i = 0; i < MATRIX_SIZE; i++) {
+            for (j = 0; j < MATRIX_SIZE; j++) {
+                printf("%d ", M[i][j]);
+            }
+            printf("\n");
+        }
+
 
         //Send portions of M to every other processes
-        for (proc = 0; proc < nrank; proc++)
+        for (proc = nrank - 1; proc >= 0; proc--)
         {
-            printf("\n proc %d's chunk \n", proc);
+            
             for (i = 0; i < MATRIX_SIZE/m; i++)
             {
                 for (j = 0; j < MATRIX_SIZE/n; j++)
@@ -86,22 +97,52 @@ int main (int argc, char *argv[])
                     subM[i+1][j+1] = M[(proc/n)*MATRIX_SIZE/m + i][(proc%n)*MATRIX_SIZE/n + j];
                 }
             }
-            for (i = 0; i < MATRIX_SIZE/m+2; i++)
+
+            //Send sub-matrix to each process
+            if (proc != MASTER)
             {
-                for (j = 0; j < MATRIX_SIZE/n+2; j++)
-                {
-                    printf("%d ", subM[i][j]);
-                }
-                printf("\n");
+                MPI_Isend(&subM[0][0],
+                        (MATRIX_SIZE/m + 2) * (MATRIX_SIZE/n + 2),
+                        MPI_INT,
+                        proc,
+                        0,
+                        MPI_COMM_WORLD,
+                        &request);
             }
         }
     }
     // Logic for task with non-Master ranks.
     else if (rank != MASTER) {
-        
+        // Receive sub-matrix from master process
+        MPI_Recv(&subM[0][0],
+         (MATRIX_SIZE/m + 2) * (MATRIX_SIZE/n + 2),
+         MPI_INT,
+         MASTER,
+         0,
+         MPI_COMM_WORLD,
+         &Stat);
     }
 
-
+    MPI_Barrier(MPI_COMM_WORLD); // synchronize all processes before printing
+    // print the chunk assigned to each process
+    
+    for (int p = 0; p < nrank; p++) {
+    if (rank == p) {
+        // your existing printf block
+        printf("\n I, proc %d, have received chunk: \n", rank);
+        for (i = 0; i < MATRIX_SIZE/m+2; i++)
+        {
+            for (j = 0; j < MATRIX_SIZE/n+2; j++)
+            {
+                printf("%d ", subM[i][j]);
+            }
+            printf("\n");
+        }
+    }
+    MPI_Barrier(MPI_COMM_WORLD); // synchronize before next process prints
+}
+    
+    
     // Terminates the MPI environment. Must be the last MPI call in the program.
     MPI_Finalize();
 }

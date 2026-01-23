@@ -1,0 +1,40 @@
+compiling application: HPC_BD_assignement3_18582431_15884392
+mpirun
+Running application: HPC_BD_assignement3_18582431_15884392
+Allocated tasks: 4
+Tasks per node: 2
+Initial Matrix M:
+0 1 2 3 4 0 
+0 1 2 3 4 0 
+0 1 2 3 4 0 
+0 1 2 3 4 0 
+0 1 2 3 4 0 
+0 0 0 0 0 0 
+
+ I, proc 0, have received chunk: 
+0 0 0 0 0 
+0 0 1 2 0 
+0 0 1 2 0 
+0 0 1 2 0 
+0 0 0 0 0 
+
+ I, proc 1, have received chunk: 
+0 0 0 0 0 
+0 3 4 0 0 
+0 3 4 0 0 
+0 3 4 0 0 
+0 0 0 0 0 
+
+ I, proc 2, have received chunk: 
+0 0 0 0 0 
+0 0 1 2 0 
+0 0 1 2 0 
+0 0 0 0 0 
+0 0 0 0 0 
+
+ I, proc 3, have received chunk: 
+0 0 0 0 0 
+0 3 4 0 0 
+0 3 4 0 0 
+0 0 0 0 0 
+0 0 0 0 0 
