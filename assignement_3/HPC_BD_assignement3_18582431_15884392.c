@@ -18,7 +18,7 @@
 // Includes the string library for functions like memset.
 #include <unistd.h>
 
-#define  MASTER		0
+#define  MASTER 0
 #define MATRIX_SIZE 10
 #define niter 3
 
@@ -66,9 +66,9 @@ int main (int argc, char *argv[])
         #define PATTERN_WIDTH 8
 
         uint8_t pattern[PATTERN_HEIGHT][PATTERN_WIDTH] = {
-            {0, 0, 0, 0, 0, 0, 1, 0},
-            {0, 1, 1, 1, 0, 0, 1, 0},
-            {0, 0, 0, 0, 0, 0, 1, 0},
+            {0, 1, 0, 0, 0, 0, 0, 0},
+            {0, 0, 1, 0, 0, 0, 0, 0},
+            {1, 1, 1, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0},
