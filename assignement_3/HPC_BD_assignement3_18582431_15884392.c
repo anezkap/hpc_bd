@@ -11,16 +11,22 @@
 #include <stdio.h>
 // Includes the standard I/O library for functions like printf.
 #include <stdlib.h>
+// Includes the standard integer types library.
+#include <stdint.h>
 // Includes the standard library for general utilities like memory management.
 #include <string.h>
+// Includes the string library for functions like memset.
+#include <unistd.h>
+
 #define  MASTER		0
-#define  ARRAY_SIZE     3000
+#define MATRIX_SIZE 10
+#define niter 3
 
 int main (int argc, char *argv[])
 // Main function for the program. `argc` and `argv` handle command-line arguments.
 {
     // Variables to store the number of ranks, rank, destination, tag, source, m (sub-matrix with contour input of update), newm (sub-matrix without contour output of update) and message count.
-    int nrank, rank, dest, tag, source, m, newm, niter=10;
+    int i, j, proc, iter, nrank, rank;
 
     // Variables for message passing: `inmsg` is the received message, and `outmsg` is the message to send.
     char inmsg, outmsg='x', outmsg_1MB[1024*2056], inmsg_1MB[1024*2056];
@@ -29,6 +35,9 @@ int main (int argc, char *argv[])
 
     // Structure to hold information about the status of an MPI operation.
     MPI_Status Stat;
+
+    // Variable to hold the request handle for non-blocking communication.
+    MPI_Request request;
 
     // Initializes the MPI environment. Must be called before any other MPI functions.
     MPI_Init(&argc,&argv);
@@ -39,34 +48,128 @@ int main (int argc, char *argv[])
     // Determines the rank (ID) of the calling process within the communicator.
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
+    // find/update m, n such that processes are given "the most square sub-matrix possible" to work with
+    // guaranteeing to minimize communication overhead
+    int n = nrank;
+    int m = 1;
+    while (m < n) {
+        m *= 2;
+        n /= 2;
+    }
+
+    // initialize "subM": the local sub-matrix that each process will update
+    int subM[MATRIX_SIZE/m + 2][MATRIX_SIZE/n + 2] = {};
+
     // Logic for task with Master rank.
     if (rank == MASTER) {
-        #define PATTERN_HEIGHT 11
-        #define PATTERN_WIDTH 97
-        int niter, i, j, M[ARRAY_SIZE][ARRAY_SIZE] = {0}; // 2D array
-        // add pattern
+        #define PATTERN_HEIGHT 8
+        #define PATTERN_WIDTH 8
+
         uint8_t pattern[PATTERN_HEIGHT][PATTERN_WIDTH] = {
-            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1},
-            {0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 1, 0},
+            {0, 1, 1, 1, 0, 0, 1, 0},
+            {0, 0, 0, 0, 0, 0, 1, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0}
         };
+
+        int i, j, M[MATRIX_SIZE][MATRIX_SIZE] = {0}; // 2D array
+        // initialize the pattern of our game of life implementation
+        // implement the pattern in our initial grid
         for (i = 0; i < PATTERN_HEIGHT; i++) {
             for (j = 0; j < PATTERN_WIDTH; j++) {
-                M[(ARRAY_SIZE - PATTERN_HEIGHT)/2 + i][(ARRAY_SIZE - PATTERN_WIDTH)/2 + j] = pattern[i][j];
+                M[(MATRIX_SIZE - PATTERN_HEIGHT)/2 + i][(MATRIX_SIZE - PATTERN_WIDTH)/2 + j] = pattern[i][j];
+            }
+        }
+
+        // print initial matrix
+        printf("Initial Matrix M:\n");
+        for (i = 0; i < MATRIX_SIZE; i++) {
+            for (j = 0; j < MATRIX_SIZE; j++) {
+                printf("%d ", M[i][j]);
+            }
+            printf("\n");
+        }
+
+
+        //Send portions of M to every other processes
+        for (proc = nrank - 1; proc >= 0; proc--)
+        {
+            
+            for (i = 0; i < MATRIX_SIZE/m; i++)
+            {
+                for (j = 0; j < MATRIX_SIZE/n; j++)
+                {
+                    subM[i+1][j+1] = M[(proc/n)*MATRIX_SIZE/m + i][(proc%n)*MATRIX_SIZE/n + j];
+                }
+            }
+
+            //Send sub-matrix to each process
+            if (proc != MASTER)
+            {
+                MPI_Isend(&subM[0][0],
+                        (MATRIX_SIZE/m + 2) * (MATRIX_SIZE/n + 2),
+                        MPI_INT,
+                        proc,
+                        0,
+                        MPI_COMM_WORLD,
+                        &request);
             }
         }
     }
     // Logic for task with non-Master ranks.
     else if (rank != MASTER) {
+        // Receive sub-matrix from master process
+        MPI_Recv(&subM[0][0],
+         (MATRIX_SIZE/m + 2) * (MATRIX_SIZE/n + 2),
+         MPI_INT,
+         MASTER,
+         0,
+         MPI_COMM_WORLD,
+         &Stat);
+    }
+    
+    MPI_Barrier(MPI_COMM_WORLD); // synchronize all processes before printing
+
+    sleep(rank*3);
+    // print the chunk assigned to each process
+    for (iter = 0; iter < niter; iter++)
+    {
         
+        printf("Process %d - Iteration %d - Sub-matrix:\n", rank, iter);
+        for (i = 0; i < MATRIX_SIZE/m+2; i++)
+        {
+            for (j = 0; j < MATRIX_SIZE/n+2; j++)
+            {
+                printf("%d ", subM[i][j]);
+            }
+            printf("\n");
+        }
+
+        //update sub-matrix
+        int temp[MATRIX_SIZE/m+2][MATRIX_SIZE/n+2]= {};
+        for (i = 0; i < MATRIX_SIZE/m; i++)
+        {
+            for (j = 0; j < MATRIX_SIZE/n; j++)
+            {
+                int nsum = 0;
+                nsum = subM[i][j] + subM[i][j+1] + subM[i][j+2] + subM[i+2][j] +
+                    subM[i+2][j+1] + subM[i+2][j+2] + subM[i+1][j] + subM[i+1][j+2];
+                if (subM[i+1][j+1] == 0 && nsum == 3)
+                {
+                    temp[i+1][j+1] = 1;
+                }
+                else if (subM[i+1][j+1] == 1 && nsum >= 2 && nsum <= 3)
+                {
+                    temp[i+1][j+1] = 1;
+                }
+            }
+        }
+        memcpy(subM, temp, sizeof(int) * (MATRIX_SIZE/m + 2) * (MATRIX_SIZE/n + 2));
+
     }
 
     // Terminates the MPI environment. Must be the last MPI call in the program.
