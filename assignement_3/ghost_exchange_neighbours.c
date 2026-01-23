@@ -81,25 +81,12 @@ void receive_side_columns(int *matrix, int num_rows, int num_cols, int *neighbou
   }
 }
 
-void exchange_ghost_cells(int *matrix, int num_rows, int num_cols, int *neighbours)
+void receive_bottom_top_columns(int *matrix, int num_rows, int num_cols, int *neighbours, MPI_Request *reqs, int *r)
 {
-  // Create subarray type for column (excluding first and last rows)
   int array_of_sizes[2] = {num_rows, num_cols};
-  int array_of_subsizes[2] = {num_rows - 2, 1};
+  int array_of_subsizes[2] = {1, num_cols};
   int array_of_starts[2];
   MPI_Datatype column_type;
-  MPI_Request reqs[8];
-  int r = 0;
-
-  // 1. Receive side ghost columns
-  receive_side_columns(matrix, num_rows, num_cols, neighbours, reqs, &r);
-
-  // 2. Send side columns
-  send_side_columns(matrix, num_rows, num_cols, neighbours, reqs, &r);
-
-  // 3. Receive top and bottom rows
-  array_of_subsizes[0] = 1;
-  array_of_subsizes[1] = num_cols;
 
   if (neighbours[2] != -1) {
     // Receive from top neighbour into row 0 (ghost row)
@@ -122,12 +109,15 @@ void exchange_ghost_cells(int *matrix, int num_rows, int num_cols, int *neighbou
     MPI_Irecv(matrix, 1, column_type, neighbours[3], 1, MPI_COMM_WORLD, &reqs[(*r)++]);
     MPI_Type_free(&column_type);
   }
+}
 
-  // Wait ONLY for side receives
-  MPI_Wait(&reqs[0], MPI_STATUS_IGNORE);
-  MPI_Wait(&reqs[1], MPI_STATUS_IGNORE);
+void send_bottom_top_columns(int *matrix, int num_rows, int num_cols, int *neighbours, MPI_Request *reqs, int *r)
+{
+  int array_of_sizes[2] = {num_rows, num_cols};
+  int array_of_subsizes[2] = {1, num_cols};
+  int array_of_starts[2];
+  MPI_Datatype column_type;
 
-  // 4. Send top and bottom rows
   if (neighbours[2] != -1) {
     // Send first data row (row 1) to top neighbour
     array_of_starts[0] = 1;
@@ -149,6 +139,30 @@ void exchange_ghost_cells(int *matrix, int num_rows, int num_cols, int *neighbou
     MPI_Isend(matrix, 1, column_type, neighbours[3], 1, MPI_COMM_WORLD, &reqs[(*r)++]);
     MPI_Type_free(&column_type);
   }
+}
+
+
+void exchange_ghost_cells(int *matrix, int num_rows, int num_cols, int *neighbours)
+{
+  // Create requests array and counter
+  MPI_Request reqs[8];
+  int r = 0;
+
+  // 1. Receive side ghost columns
+  receive_side_columns(matrix, num_rows, num_cols, neighbours, reqs, &r);
+
+  // 2. Send side columns
+  send_side_columns(matrix, num_rows, num_cols, neighbours, reqs, &r);
+
+  // 3. Receive top and bottom rows
+  receive_bottom_top_columns(matrix, num_rows, num_cols, neighbours, reqs, &r);
+
+  // Wait only for side receives, the other sends and receives can overlap
+  MPI_Wait(&reqs[0], MPI_STATUS_IGNORE);
+  MPI_Wait(&reqs[1], MPI_STATUS_IGNORE);
+
+  // 4. Send top and bottom rows
+  send_bottom_top_columns(matrix, num_rows, num_cols, neighbours, reqs, &r);
 
   // 5. Wait for all remaining requests to complete
   MPI_Waitall(r, reqs, MPI_STATUSES_IGNORE);
