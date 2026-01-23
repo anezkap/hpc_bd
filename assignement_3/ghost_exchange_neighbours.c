@@ -36,7 +36,7 @@ void send_side_columns(int *matrix, int num_rows, int num_cols, int *neighbours,
     MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
                               array_of_starts, MPI_ORDER_C, MPI_INT, &column_type);
     MPI_Type_commit(&column_type);
-    MPI_Isend(matrix, 1, column_type, neighbours[0], 0, MPI_COMM_WORLD, &reqs[*r++]);
+    MPI_Isend(matrix, 1, column_type, neighbours[0], 0, MPI_COMM_WORLD, &reqs[(*r)++]);
     MPI_Type_free(&column_type);
   }
 
@@ -46,7 +46,7 @@ void send_side_columns(int *matrix, int num_rows, int num_cols, int *neighbours,
     MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
                               array_of_starts, MPI_ORDER_C, MPI_INT, &column_type);
     MPI_Type_commit(&column_type);
-    MPI_Isend(matrix, 1, column_type, neighbours[1], 0, MPI_COMM_WORLD, &reqs[*r++]);
+    MPI_Isend(matrix, 1, column_type, neighbours[1], 0, MPI_COMM_WORLD, &reqs[(*r)++]);
     MPI_Type_free(&column_type);
   }
 }
@@ -65,7 +65,7 @@ void receive_side_columns(int *matrix, int num_rows, int num_cols, int *neighbou
     MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
                              array_of_starts, MPI_ORDER_C, MPI_INT, &column_type);
     MPI_Type_commit(&column_type);
-    MPI_Irecv(matrix, 1, column_type, neighbours[0], 0, MPI_COMM_WORLD, &reqs[*r++]);
+    MPI_Irecv(matrix, 1, column_type, neighbours[0], 0, MPI_COMM_WORLD, &reqs[(*r)++]);
     MPI_Type_free(&column_type);
   }
 
@@ -76,7 +76,7 @@ void receive_side_columns(int *matrix, int num_rows, int num_cols, int *neighbou
     MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
                              array_of_starts, MPI_ORDER_C, MPI_INT, &column_type);
     MPI_Type_commit(&column_type);
-    MPI_Irecv(matrix, 1, column_type, neighbours[1], 0, MPI_COMM_WORLD, &reqs[*r++]);
+    MPI_Irecv(matrix, 1, column_type, neighbours[1], 0, MPI_COMM_WORLD, &reqs[(*r)++]);
     MPI_Type_free(&column_type);
   }
 }
