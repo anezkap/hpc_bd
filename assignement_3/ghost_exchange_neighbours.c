@@ -23,7 +23,7 @@ int *get_nbours (int pid, int m, int n)
 }
 
 
-void exchange_ghost_cells(int matrix, int num_rows, int num_cols, int *neighbours)
+void exchange_ghost_cells(int *matrix, int num_rows, int num_cols, int *neighbours)
 {
   // Create subarray type for column (excluding first and last rows)
   int array_of_sizes[2] = {num_rows, num_cols};
@@ -38,7 +38,7 @@ void exchange_ghost_cells(int matrix, int num_rows, int num_cols, int *neighbour
     array_of_starts[0] = 1;
     array_of_starts[1] = 1;
     MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
-                             array_of_starts, MPI_C_ORDER, MPI_INT, &column_type);
+                             array_of_starts, MPI_ORDER_C, MPI_INT, &column_type);
     MPI_Type_commit(&column_type);
     MPI_Send(matrix, 1, column_type, neighbours[0], 0, MPI_COMM_WORLD);
     MPI_Type_free(&column_type);
@@ -49,7 +49,7 @@ void exchange_ghost_cells(int matrix, int num_rows, int num_cols, int *neighbour
     array_of_starts[0] = 1;
     array_of_starts[1] = num_cols - 2;
     MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
-                             array_of_starts, MPI_C_ORDER, MPI_INT, &column_type);
+                             array_of_starts, MPI_ORDER_C, MPI_INT, &column_type);
     MPI_Type_commit(&column_type);
     MPI_Send(matrix, 1, column_type, neighbours[1], 0, MPI_COMM_WORLD);
     MPI_Type_free(&column_type);
@@ -61,7 +61,7 @@ void exchange_ghost_cells(int matrix, int num_rows, int num_cols, int *neighbour
     array_of_starts[0] = 1;
     array_of_starts[1] = 0;
     MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
-                             array_of_starts, MPI_C_ORDER, MPI_INT, &column_type);
+                             array_of_starts, MPI_ORDER_C, MPI_INT, &column_type);
     MPI_Type_commit(&column_type);
     MPI_Recv(matrix, 1, column_type, neighbours[0], 0, MPI_COMM_WORLD, &status);
     MPI_Type_free(&column_type);
@@ -72,7 +72,7 @@ void exchange_ghost_cells(int matrix, int num_rows, int num_cols, int *neighbour
     array_of_starts[0] = 1;
     array_of_starts[1] = num_cols - 1;
     MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
-                             array_of_starts, MPI_C_ORDER, MPI_INT, &column_type);
+                             array_of_starts, MPI_ORDER_C, MPI_INT, &column_type);
     MPI_Type_commit(&column_type);
     MPI_Recv(matrix, 1, column_type, neighbours[1], 0, MPI_COMM_WORLD, &status);
     MPI_Type_free(&column_type);
@@ -80,14 +80,14 @@ void exchange_ghost_cells(int matrix, int num_rows, int num_cols, int *neighbour
 
   // 3. Send and receive top and bottom rows
   array_of_subsizes[0] = 1;
-  array_of_subsizes[1] = num_cols - 2;
+  array_of_subsizes[1] = num_cols;
 
   if (neighbours[2] != -1) {
     // Send first data row (row 1) to top neighbour
     array_of_starts[0] = 1;
-    array_of_starts[1] = 1;
+    array_of_starts[1] = 0;
     MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
-                             array_of_starts, MPI_C_ORDER, MPI_INT, &column_type);
+                             array_of_starts, MPI_ORDER_C, MPI_INT, &column_type);
     MPI_Type_commit(&column_type);
     MPI_Send(matrix, 1, column_type, neighbours[2], 0, MPI_COMM_WORLD);
     MPI_Type_free(&column_type);
@@ -96,9 +96,9 @@ void exchange_ghost_cells(int matrix, int num_rows, int num_cols, int *neighbour
   if (neighbours[3] != -1) {
     // Send last data row (row num_rows-2) to bottom neighbour
     array_of_starts[0] = num_rows - 2;
-    array_of_starts[1] = 1;
+    array_of_starts[1] = 0;
     MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
-                             array_of_starts, MPI_C_ORDER, MPI_INT, &column_type);
+                             array_of_starts, MPI_ORDER_C, MPI_INT, &column_type);
     MPI_Type_commit(&column_type);
     MPI_Send(matrix, 1, column_type, neighbours[3], 0, MPI_COMM_WORLD);
     MPI_Type_free(&column_type);
@@ -107,9 +107,9 @@ void exchange_ghost_cells(int matrix, int num_rows, int num_cols, int *neighbour
   if (neighbours[2] != -1) {
     // Receive from top neighbour into row 0 (ghost row)
     array_of_starts[0] = 0;
-    array_of_starts[1] = 1;
+    array_of_starts[1] = 0;
     MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
-                             array_of_starts, MPI_C_ORDER, MPI_INT, &column_type);
+                             array_of_starts, MPI_ORDER_C, MPI_INT, &column_type);
     MPI_Type_commit(&column_type);
     MPI_Recv(matrix, 1, column_type, neighbours[2], 0, MPI_COMM_WORLD, &status);
     MPI_Type_free(&column_type);
@@ -118,9 +118,9 @@ void exchange_ghost_cells(int matrix, int num_rows, int num_cols, int *neighbour
   if (neighbours[3] != -1) {
     // Receive from bottom neighbour into row num_rows-1 (ghost row)
     array_of_starts[0] = num_rows - 1;
-    array_of_starts[1] = 1;
+    array_of_starts[1] = 0;
     MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
-                             array_of_starts, MPI_C_ORDER, MPI_INT, &column_type);
+                             array_of_starts, MPI_ORDER_C, MPI_INT, &column_type);
     MPI_Type_commit(&column_type);
     MPI_Recv(matrix, 1, column_type, neighbours[3], 0, MPI_COMM_WORLD, &status);
     MPI_Type_free(&column_type);
