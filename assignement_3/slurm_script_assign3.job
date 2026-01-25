@@ -57,9 +57,9 @@ echo "Allocated tasks: $SLURM_NTASKS"
 echo "Tasks per node: $SLURM_NTASKS_PER_NODE"
 
 # Executes the application using the MPI run command with specified options and arguments
-echo
-for ((ncores=1; ncores<=4; ncores*=2)); do  # TODO update loop
+echo  
+for ((ncores=1; ncores<=128; ncores*=2)); do  # TODO update loop
 echo "CPUS: " $ncores
-  srun --cpu-bind=cores -n $ncores ./$APP $ARGS
+  mpirun -np $ncores ./$APP $ARGS
 echo "DONE "
 done

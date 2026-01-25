@@ -156,9 +156,14 @@ void exchange_ghost_cells(int *matrix, int num_rows, int num_cols, int *neighbou
   // 3. Receive top and bottom rows
   receive_bottom_top_columns(matrix, num_rows, num_cols, neighbours, reqs, &r);
 
-  // Wait only for side receives, the other sends and receives can overlap
-  MPI_Wait(&reqs[0], MPI_STATUS_IGNORE);
-  MPI_Wait(&reqs[1], MPI_STATUS_IGNORE);
+  // Wait only for side receives (if we have these neighbours), the other sends and receives can overlap
+  if (neighbours[0] != -1 && neighbours[1] != -1) {
+    MPI_Wait(&reqs[0], MPI_STATUS_IGNORE);
+    MPI_Wait(&reqs[1], MPI_STATUS_IGNORE);
+  }
+  else if (neighbours[0] != -1 || neighbours[1] != -1) {
+    MPI_Wait(&reqs[0], MPI_STATUS_IGNORE);
+  }
 
   // 4. Send top and bottom rows
   send_bottom_top_columns(matrix, num_rows, num_cols, neighbours, reqs, &r);
