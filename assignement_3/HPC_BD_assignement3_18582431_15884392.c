@@ -22,6 +22,7 @@
 #define MATRIX_SIZE 3000
 #define niter 100   // TODO: change to 5000
 
+
 int *get_nbours(int pid, int m, int n);
 void exchange_ghost_cells(int *matrix, int num_rows, int num_cols, int *neighbours);
 int calculate_number_live_cells(int *matrix, int num_rows, int num_cols);
@@ -169,11 +170,7 @@ int main (int argc, char *argv[])
                 int nsum = 0;
                 nsum = subM[i][j] + subM[i][j+1] + subM[i][j+2] + subM[i+2][j] +
                     subM[i+2][j+1] + subM[i+2][j+2] + subM[i+1][j] + subM[i+1][j+2];
-                if (subM[i+1][j+1] == 0 && nsum == 3)
-                {
-                    temp[i+1][j+1] = 1;
-                }
-                else if (subM[i+1][j+1] == 1 && nsum >= 2 && nsum <= 3)
+                if (nsum == 3 || (subM[i+1][j+1] == 1 && nsum == 2))
                 {
                     temp[i+1][j+1] = 1;
                 }

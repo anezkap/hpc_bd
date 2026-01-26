@@ -1,0 +1,106 @@
+compiling application: HPC_BD_assignement3_18582431_15884392
+mpirun
+Running application: HPC_BD_assignement3_18582431_15884392
+Allocated tasks: 4
+Tasks per node: 2
+Initial Matrix M:
+0 0 0 0 0 0 0 0 0 0 
+0 0 1 0 0 0 0 0 0 0 
+0 0 0 1 0 0 0 0 0 0 
+0 1 1 1 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 
+Process 0 - Iteration 0 - Sub-matrix:
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 0 1 0 0 0 
+0 0 0 0 1 0 0 
+0 0 1 1 1 0 0 
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+[Iteration 0] Total live cells = 5
+Process 0 - Iteration 1 - Sub-matrix:
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 1 0 1 0 0 
+0 0 0 1 1 0 0 
+0 0 0 1 0 0 0 
+0 0 0 0 0 0 0 
+[Iteration 1] Total live cells = 5
+Process 0 - Iteration 2 - Sub-matrix:
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 0 0 1 0 0 
+0 0 1 0 1 0 0 
+0 0 0 1 1 0 0 
+0 0 0 0 0 0 0 
+[Iteration 2] Total live cells = 5
+Process 0 - Iteration 3 - Sub-matrix:
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 0 1 0 0 0 
+0 0 0 0 1 1 0 
+0 0 0 1 1 0 0 
+0 0 0 0 0 0 0 
+[Iteration 3] Total live cells = 5
+Process 0 - Iteration 4 - Sub-matrix:
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 0 0 1 0 0 
+0 0 0 0 0 1 0 
+0 0 0 1 1 1 0 
+0 0 0 0 0 0 0 
+[Iteration 4] Total live cells = 5
+Process 0 - Iteration 5 - Sub-matrix:
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 0 1 0 1 0 
+0 0 0 0 1 1 0 
+0 0 0 0 1 0 0 
+[Iteration 5] Total live cells = 5
+Process 0 - Iteration 6 - Sub-matrix:
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 0 0 0 1 0 
+0 0 0 1 0 1 0 
+0 0 0 0 1 1 0 
+[Iteration 6] Total live cells = 5
+Process 0 - Iteration 7 - Sub-matrix:
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 0 0 1 0 0 
+0 0 0 0 0 1 1 
+0 0 0 0 1 1 0 
+[Iteration 7] Total live cells = 5
+Process 0 - Iteration 8 - Sub-matrix:
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 0 0 0 1 0 
+0 0 0 0 0 0 1 
+0 0 0 0 1 1 1 
+[Iteration 8] Total live cells = 5
+Process 0 - Iteration 9 - Sub-matrix:
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 0 0 1 0 1 
+0 0 0 0 0 1 1 
+[Iteration 9] Total live cells = 5
