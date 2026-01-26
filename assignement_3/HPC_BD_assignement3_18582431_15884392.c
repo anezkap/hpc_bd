@@ -58,8 +58,8 @@ int main (int argc, char *argv[])
     }
 
     // initialize "subM": the local sub-matrix that each process will update
-    int subM_rows = ceil((double)MATRIX_SIZE/m); // number of rows in sub-matrix without ghost cells
-    int subM_cols = ceil((double)MATRIX_SIZE/n); // number of columns in sub-matrix without ghost cells
+    int subM_rows = MATRIX_SIZE/m; // number of rows in sub-matrix without ghost cells
+    int subM_cols = MATRIX_SIZE/n; // number of columns in sub-matrix without ghost cells
     int subM[subM_rows + 2][subM_cols + 2] = {};
 
     // Logic for task with Master rank.
