@@ -38,9 +38,6 @@ int main (int argc, char *argv[])
     // Initializes the MPI environment. Must be called before any other MPI functions.
     MPI_Init(&argc,&argv);
 
-    // Start timing
-    double start = MPI_Wtime();
-
     // Determines the total number of processes (tasks) in the MPI communicator `MPI_COMM_WORLD`.
     MPI_Comm_size(MPI_COMM_WORLD, &nrank);
     
@@ -138,7 +135,6 @@ int main (int argc, char *argv[])
                         MPI_COMM_WORLD);
             }
         }
-
     }
 
     // Logic for task with non-Master ranks.
@@ -152,10 +148,11 @@ int main (int argc, char *argv[])
          MPI_COMM_WORLD,
          &Stat);
     }
-    
-    MPI_Barrier(MPI_COMM_WORLD);
 
     int *neighbours = get_nbours(rank, m, n);
+    
+    MPI_Barrier(MPI_COMM_WORLD);
+    double simulation_start = MPI_Wtime();
 
     // Run the simulation for niter iterations
     for (iter = 0; iter < niter; iter++)
@@ -198,9 +195,9 @@ int main (int argc, char *argv[])
     }
 
     // Stop timing and print result
-    double end = MPI_Wtime();
+    double simulation_end = MPI_Wtime();
     if (rank == MASTER) {
-        printf("Script finalised after %d iterations after %f seconds\n", niter, end - start);
+        printf("Script finalised after %d iterations after %f seconds\n", niter, simulation_end - simulation_start);
     }
 
     // Terminates the MPI environment. Must be the last MPI call in the program.

@@ -1,0 +1,117 @@
+compiling application: HPC_BD_assignement3_18582431_15884392
+Running application: HPC_BD_assignement3_18582431_15884392
+Allocated tasks: 256
+Tasks per node: 128
+
+CPUS:  1
+Rank 0: matrix partitioning in 1 rows and 1 cols
+[Iteration 9] [generation 10] Total live cells = 49
+[Iteration 19] [generation 20] Total live cells = 71
+[Iteration 29] [generation 30] Total live cells = 89
+[Iteration 39] [generation 40] Total live cells = 88
+[Iteration 49] [generation 50] Total live cells = 98
+[Iteration 59] [generation 60] Total live cells = 96
+[Iteration 69] [generation 70] Total live cells = 79
+[Iteration 79] [generation 80] Total live cells = 96
+[Iteration 89] [generation 90] Total live cells = 118
+[Iteration 99] [generation 100] Total live cells = 138
+Script finalised after 100 iterations after 1.588004 seconds
+DONE 
+CPUS:  2
+Rank 0: matrix partitioning in 2 rows and 1 cols
+[Iteration 9] [generation 10] Total live cells = 49
+[Iteration 19] [generation 20] Total live cells = 71
+[Iteration 29] [generation 30] Total live cells = 89
+[Iteration 39] [generation 40] Total live cells = 88
+[Iteration 49] [generation 50] Total live cells = 98
+[Iteration 59] [generation 60] Total live cells = 96
+[Iteration 69] [generation 70] Total live cells = 79
+[Iteration 79] [generation 80] Total live cells = 96
+[Iteration 89] [generation 90] Total live cells = 118
+[Iteration 99] [generation 100] Total live cells = 138
+Script finalised after 100 iterations after 0.874751 seconds
+DONE 
+CPUS:  4
+Rank 0: matrix partitioning in 2 rows and 2 cols
+[Iteration 9] [generation 10] Total live cells = 49
+[Iteration 19] [generation 20] Total live cells = 71
+[Iteration 29] [generation 30] Total live cells = 89
+[Iteration 39] [generation 40] Total live cells = 88
+[Iteration 49] [generation 50] Total live cells = 98
+[Iteration 59] [generation 60] Total live cells = 96
+[Iteration 69] [generation 70] Total live cells = 79
+[Iteration 79] [generation 80] Total live cells = 96
+[Iteration 89] [generation 90] Total live cells = 118
+[Iteration 99] [generation 100] Total live cells = 138
+Script finalised after 100 iterations after 0.418645 seconds
+DONE 
+CPUS:  8
+Rank 0: matrix partitioning in 4 rows and 2 cols
+[Iteration 9] [generation 10] Total live cells = 49
+[Iteration 19] [generation 20] Total live cells = 71
+[Iteration 29] [generation 30] Total live cells = 89
+[Iteration 39] [generation 40] Total live cells = 88
+[Iteration 49] [generation 50] Total live cells = 98
+[Iteration 59] [generation 60] Total live cells = 96
+[Iteration 69] [generation 70] Total live cells = 79
+[Iteration 79] [generation 80] Total live cells = 96
+[Iteration 89] [generation 90] Total live cells = 118
+[Iteration 99] [generation 100] Total live cells = 138
+Script finalised after 100 iterations after 0.182625 seconds
+DONE 
+CPUS:  16
+Rank 0: matrix partitioning in 4 rows and 4 cols
+[Iteration 9] [generation 10] Total live cells = 49
+[Iteration 19] [generation 20] Total live cells = 71
+[Iteration 29] [generation 30] Total live cells = 89
+[Iteration 39] [generation 40] Total live cells = 88
+[Iteration 49] [generation 50] Total live cells = 98
+[Iteration 59] [generation 60] Total live cells = 96
+[Iteration 69] [generation 70] Total live cells = 79
+[Iteration 79] [generation 80] Total live cells = 96
+[Iteration 89] [generation 90] Total live cells = 118
+[Iteration 99] [generation 100] Total live cells = 138
+Script finalised after 100 iterations after 0.100720 seconds
+DONE 
+CPUS:  32
+Rank 0: matrix partitioning in 8 rows and 4 cols
+[Iteration 9] [generation 10] Total live cells = 49
+[Iteration 19] [generation 20] Total live cells = 71
+[Iteration 29] [generation 30] Total live cells = 89
+[Iteration 39] [generation 40] Total live cells = 88
+[Iteration 49] [generation 50] Total live cells = 98
+[Iteration 59] [generation 60] Total live cells = 96
+[Iteration 69] [generation 70] Total live cells = 79
+[Iteration 79] [generation 80] Total live cells = 96
+[Iteration 89] [generation 90] Total live cells = 118
+[Iteration 99] [generation 100] Total live cells = 138
+Script finalised after 100 iterations after 0.052971 seconds
+DONE 
+CPUS:  64
+Rank 0: matrix partitioning in 8 rows and 8 cols
+[Iteration 9] [generation 10] Total live cells = 49
+[Iteration 19] [generation 20] Total live cells = 71
+[Iteration 29] [generation 30] Total live cells = 89
+[Iteration 39] [generation 40] Total live cells = 88
+[Iteration 49] [generation 50] Total live cells = 98
+[Iteration 59] [generation 60] Total live cells = 96
+[Iteration 69] [generation 70] Total live cells = 79
+[Iteration 79] [generation 80] Total live cells = 96
+[Iteration 89] [generation 90] Total live cells = 118
+[Iteration 99] [generation 100] Total live cells = 138
+Script finalised after 100 iterations after 0.029906 seconds
+DONE 
+CPUS:  128
+Rank 0: matrix partitioning in 16 rows and 8 cols
+[Iteration 9] [generation 10] Total live cells = 49
+[Iteration 19] [generation 20] Total live cells = 71
+[Iteration 29] [generation 30] Total live cells = 89
+[Iteration 39] [generation 40] Total live cells = 88
+[Iteration 49] [generation 50] Total live cells = 98
+[Iteration 59] [generation 60] Total live cells = 96
+[Iteration 69] [generation 70] Total live cells = 79
+[Iteration 79] [generation 80] Total live cells = 96
+[Iteration 89] [generation 90] Total live cells = 118
+[Iteration 99] [generation 100] Total live cells = 138
+Script finalised after 100 iterations after 0.020766 seconds
+DONE 
