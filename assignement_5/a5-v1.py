@@ -9,7 +9,7 @@ from pycuda.compiler import SourceModule
 # import pycuda.autoinit
 
 #################### Array size
-N = 1000000
+N = 1024
 
 #################### Create the input array on CPU (random integers between 1 and 100) and initialise the output array
 a_cpu = np.random.uniform(1.0, 100.0, size=(N)).astype(np.uint32)
@@ -41,8 +41,7 @@ cuda.memcpy_htod(a_gpu, a_cpu)
 cuda.memcpy_htod(b_gpu, b_cpu)
 
 #################### Grid and Block size
-block_size = 512
-# grid_size = (N + block_size - 1) // block_size
+block_size = 256
 grid_size = int(np.ceil(N / block_size))
 
 #################### Launch the GPU kernel
@@ -56,7 +55,7 @@ cuda.memcpy_dtoh(b_cpu, b_gpu)
 end_gpu.record()
 cuda.Context.synchronize()
 gpu_time = start_gpu.time_till(end_gpu) * 1e-3
-print("Elapsed on GPU with PyCuda (sec): ", gpu_time)
+print("Elapsed on GPU with PyCuda, N = 1024 and block_size = 256 (sec): ", gpu_time)
 print("---------------------")
 
 #################### Sequential move on CPU for validation and comparison
@@ -78,20 +77,35 @@ for i in range(N):
 print("Validation: there are %d different element(s)! " % dif)
 print("---------------------")
 
+#################### Sequential move on CPU for comparison using vector operations
+b_seq_vec = np.zeros(N, np.uint32)
+start_cpu = time.time()
+b_seq_vec[-1] = a_cpu[0]
+b_seq_vec[:-1] = a_cpu[1:]
+end_cpu = time.time()
+cpu_time = end_cpu - start_cpu
+print("Elapsed time using CPU vector operations (sec): ", cpu_time)
+print("---------------------")
 
-#################### Sequential move on CPU for validation and comparison
-# b_seq = np.zeros(N, np.uint32)
-# start_cpu = time.time()
-# b_seq = np.roll(a_cpu, -1)
-# end_cpu = time.time()
-# cpu_time = end_cpu - start_cpu
-# print("Elapsed time using CPU sequential for-loop (sec): ", cpu_time)
-# print("---------------------")
+dif = 0
+for i in range(N):
+    if b_seq_vec[i] != b_seq[i]:
+        dif += 1
+print("Validation: there are %d different element(s)! " % dif)
+print("---------------------")
 
-# ################### Validation
-# dif = 0
-# for i in range(N):
-#     if b_cpu[i] != b_seq[i]:
-#         dif += 1
-# print("Validation: there are %d different element(s)! " % dif)
-# print("---------------------")
+#################### Sequential move on CPU for comparison using numpy roll
+b_seq_roll = np.zeros(N, np.uint32)
+start_cpu = time.time()
+b_seq_roll = np.roll(a_cpu, -1)
+end_cpu = time.time()
+cpu_time = end_cpu - start_cpu
+print("Elapsed time using CPU numpy roll (sec): ", cpu_time)
+print("---------------------")
+
+dif = 0
+for i in range(N):
+    if b_seq_roll[i] != b_seq[i]:
+        dif += 1
+print("Validation: there are %d different element(s)! " % dif)
+print("---------------------")
