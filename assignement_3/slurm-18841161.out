@@ -1,0 +1,28 @@
+compiling application: HPC_BD_assignement3_18582431_15884392
+Running application: HPC_BD_assignement3_18582431_15884392
+Allocated tasks: 8
+Tasks per node: 8
+Rank 0: matrix partitioning in 4 rows and 2 cols
+Original Matrix M after 0 iterations:
+0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 
+0 0 1 1 1 1 1 1 0 0 
+0 0 1 0 0 0 0 1 0 0 
+0 0 1 0 0 0 0 1 0 0 
+0 0 1 0 0 0 0 1 0 0 
+0 0 1 0 0 0 0 1 0 0 
+0 0 1 1 1 1 1 1 0 0 
+0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 
+Script finalised after 0 iterations after 0.000000 seconds
+Final Matrix M after 0 iterations:
+0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 
+0 0 1 0 0 0 0 1 0 0 
+0 0 1 0 0 0 0 1 0 0 
+0 0 0 0 0 0 0 0 0 0 
+0 0 1 0 0 0 0 1 0 0 
+0 0 1 1 1 1 1 1 0 0 
+0 0 0 0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 0 0 0 

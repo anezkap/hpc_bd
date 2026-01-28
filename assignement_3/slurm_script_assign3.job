@@ -8,7 +8,7 @@
 #SBATCH -N 1
 
 # Allocates 64 tasks (processes) per node
-#SBATCH --ntasks-per-node=64
+#SBATCH --ntasks-per-node=8
 
 # Sources the system-wide bash configuration file
 . /etc/bashrc
