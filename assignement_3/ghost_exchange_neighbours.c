@@ -44,64 +44,25 @@ void send_side_columns(int *matrix, int num_rows, int num_cols, int *neighbours,
   int array_of_starts[2];
   array_of_starts[0] = 1;
   MPI_Datatype column_type;
-  int mpi_err;
 
   if (neighbours[0] != -1) {
     // Send column 1 to left neighbour
     array_of_starts[1] = 1;
-    mpi_err = MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
+    MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
                               array_of_starts, MPI_ORDER_C, MPI_INT, &column_type);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Type_create_subarray failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
-    
-    mpi_err = MPI_Type_commit(&column_type);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Type_commit failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
-    
-    mpi_err = MPI_Isend(matrix, 1, column_type, neighbours[0], 1, MPI_COMM_WORLD, &reqs[(*r)++]);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Isend failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
-    
-    mpi_err = MPI_Type_free(&column_type);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Type_free failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
+    MPI_Type_commit(&column_type);
+    MPI_Isend(matrix, 1, column_type, neighbours[0], 1, MPI_COMM_WORLD, &reqs[(*r)++]);
+    MPI_Type_free(&column_type);
   }
 
   if (neighbours[1] != -1) {
     // Send column num_cols-2 to right neighbour
     array_of_starts[1] = num_cols - 2;
-    mpi_err = MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
+    MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
                               array_of_starts, MPI_ORDER_C, MPI_INT, &column_type);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Type_create_subarray failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
-    
-    mpi_err = MPI_Type_commit(&column_type);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Type_commit failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
-    
-    mpi_err = MPI_Isend(matrix, 1, column_type, neighbours[1], 1, MPI_COMM_WORLD, &reqs[(*r)++]);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Isend failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
-    
-    mpi_err = MPI_Type_free(&column_type);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Type_free failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
+    MPI_Type_commit(&column_type);
+    MPI_Isend(matrix, 1, column_type, neighbours[1], 1, MPI_COMM_WORLD, &reqs[(*r)++]);
+    MPI_Type_free(&column_type);
   }
 }
 
@@ -112,66 +73,27 @@ void receive_side_columns(int *matrix, int num_rows, int num_cols, int *neighbou
   int array_of_subsizes[2] = {num_rows - 2, 1};
   int array_of_starts[2];
   MPI_Datatype column_type;
-  int mpi_err;
 
   if (neighbours[0] != -1) {
     // Receive from left neighbour into column 0 (ghost column)
     array_of_starts[0] = 1;
     array_of_starts[1] = 0;
-    mpi_err = MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
+    MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
                              array_of_starts, MPI_ORDER_C, MPI_INT, &column_type);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Type_create_subarray failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
-    
-    mpi_err = MPI_Type_commit(&column_type);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Type_commit failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
-    
-    mpi_err = MPI_Irecv(matrix, 1, column_type, neighbours[0], 1, MPI_COMM_WORLD, &reqs[(*r)++]);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Irecv failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
-    
-    mpi_err = MPI_Type_free(&column_type);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Type_free failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
+    MPI_Type_commit(&column_type);
+    MPI_Irecv(matrix, 1, column_type, neighbours[0], 1, MPI_COMM_WORLD, &reqs[(*r)++]);
+    MPI_Type_free(&column_type);
   }
 
   if (neighbours[1] != -1) {
     // Receive from right neighbour into column num_cols-1 (ghost column)
     array_of_starts[0] = 1;
     array_of_starts[1] = num_cols - 1;
-    mpi_err = MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
+    MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
                              array_of_starts, MPI_ORDER_C, MPI_INT, &column_type);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Type_create_subarray failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
-    
-    mpi_err = MPI_Type_commit(&column_type);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Type_commit failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
-    
-    mpi_err = MPI_Irecv(matrix, 1, column_type, neighbours[1], 1, MPI_COMM_WORLD, &reqs[(*r)++]);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Irecv failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
-    
-    mpi_err = MPI_Type_free(&column_type);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Type_free failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
+    MPI_Type_commit(&column_type);
+    MPI_Irecv(matrix, 1, column_type, neighbours[1], 1, MPI_COMM_WORLD, &reqs[(*r)++]);
+    MPI_Type_free(&column_type);
   }
 }
 
@@ -182,66 +104,27 @@ void receive_bottom_top_columns(int *matrix, int num_rows, int num_cols, int *ne
   int array_of_subsizes[2] = {1, num_cols};
   int array_of_starts[2];
   MPI_Datatype column_type;
-  int mpi_err;
 
   if (neighbours[2] != -1) {
     // Receive from top neighbour into row 0 (ghost row)
     array_of_starts[0] = 0;
     array_of_starts[1] = 0;
-    mpi_err = MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
+    MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
                              array_of_starts, MPI_ORDER_C, MPI_INT, &column_type);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Type_create_subarray failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
-    
-    mpi_err = MPI_Type_commit(&column_type);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Type_commit failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
-    
-    mpi_err = MPI_Irecv(matrix, 1, column_type, neighbours[2], 1, MPI_COMM_WORLD, &reqs[(*r)++]);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Irecv failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
-    
-    mpi_err = MPI_Type_free(&column_type);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Type_free failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
+    MPI_Type_commit(&column_type);
+    MPI_Irecv(matrix, 1, column_type, neighbours[2], 1, MPI_COMM_WORLD, &reqs[(*r)++]);
+    MPI_Type_free(&column_type);
   }
 
   if (neighbours[3] != -1) {
     // Receive from bottom neighbour into row num_rows-1 (ghost row)
     array_of_starts[0] = num_rows - 1;
     array_of_starts[1] = 0;
-    mpi_err = MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
+    MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
                              array_of_starts, MPI_ORDER_C, MPI_INT, &column_type);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Type_create_subarray failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
-    
-    mpi_err = MPI_Type_commit(&column_type);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Type_commit failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
-    
-    mpi_err = MPI_Irecv(matrix, 1, column_type, neighbours[3], 1, MPI_COMM_WORLD, &reqs[(*r)++]);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Irecv failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
-    
-    mpi_err = MPI_Type_free(&column_type);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Type_free failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
+    MPI_Type_commit(&column_type);
+    MPI_Irecv(matrix, 1, column_type, neighbours[3], 1, MPI_COMM_WORLD, &reqs[(*r)++]);
+    MPI_Type_free(&column_type);
   }
 }
 
@@ -252,66 +135,27 @@ void send_bottom_top_columns(int *matrix, int num_rows, int num_cols, int *neigh
   int array_of_subsizes[2] = {1, num_cols};
   int array_of_starts[2];
   MPI_Datatype column_type;
-  int mpi_err;
 
   if (neighbours[2] != -1) {
     // Send first data row (row 1) to top neighbour
     array_of_starts[0] = 1;
     array_of_starts[1] = 0;
-    mpi_err = MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
+    MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
                              array_of_starts, MPI_ORDER_C, MPI_INT, &column_type);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Type_create_subarray failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
-    
-    mpi_err = MPI_Type_commit(&column_type);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Type_commit failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
-    
-    mpi_err = MPI_Isend(matrix, 1, column_type, neighbours[2], 1, MPI_COMM_WORLD, &reqs[(*r)++]);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Isend failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
-    
-    mpi_err = MPI_Type_free(&column_type);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Type_free failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
+    MPI_Type_commit(&column_type);
+    MPI_Isend(matrix, 1, column_type, neighbours[2], 1, MPI_COMM_WORLD, &reqs[(*r)++]);
+    MPI_Type_free(&column_type);
   }
 
   if (neighbours[3] != -1) {
     // Send last data row (row num_rows-2) to bottom neighbour
     array_of_starts[0] = num_rows - 2;
     array_of_starts[1] = 0;
-    mpi_err = MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
+    MPI_Type_create_subarray(2, array_of_sizes, array_of_subsizes, 
                              array_of_starts, MPI_ORDER_C, MPI_INT, &column_type);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Type_create_subarray failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
-    
-    mpi_err = MPI_Type_commit(&column_type);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Type_commit failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
-    
-    mpi_err = MPI_Isend(matrix, 1, column_type, neighbours[3], 1, MPI_COMM_WORLD, &reqs[(*r)++]);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Isend failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
-    
-    mpi_err = MPI_Type_free(&column_type);
-    if (mpi_err != MPI_SUCCESS) {
-      fprintf(stderr, "ERROR: MPI_Type_free failed\n");
-      MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
-    }
+    MPI_Type_commit(&column_type);
+    MPI_Isend(matrix, 1, column_type, neighbours[3], 1, MPI_COMM_WORLD, &reqs[(*r)++]);
+    MPI_Type_free(&column_type);
   }
 }
 
