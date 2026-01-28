@@ -2,7 +2,7 @@
 # Specifies the script should be run using the bash shell
 
 # Allocates a maximum runtime of 10 minutes for the job
-#SBATCH --time=00:10:00
+#SBATCH --time=00:01:00
 
 # Requests 1 nodes for the job
 #SBATCH -N 1
@@ -56,10 +56,12 @@ export OMP_NUM_THREADS=1
 echo "Allocated tasks: $SLURM_NTASKS"
 echo "Tasks per node: $SLURM_NTASKS_PER_NODE"
 
+mpirun -np 8 ./$APP $ARGS
+
 # Executes the application using the MPI run command with specified options and arguments
-echo  
-for ((ncores=1; ncores<=8; ncores*=2)); do  # TODO update loop
-echo "CPUS: " $ncores
-  mpirun -np $ncores ./$APP $ARGS
-echo "DONE "
-done
+# echo  
+# for ((ncores=1; ncores<=4; ncores*=2)); do  # TODO update loop
+# echo "CPUS: " $ncores
+  # mpirun -np $ncores ./$APP $ARGS
+# echo "DONE "
+# done
