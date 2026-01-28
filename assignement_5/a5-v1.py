@@ -95,23 +95,3 @@ print("---------------------")
 #         dif += 1
 # print("Validation: there are %d different element(s)! " % dif)
 # print("---------------------")
-
-#################### Numba CPU parallel left rotation
-# @njit(parallel=True)
-# def cpu_left_rotation(a, b):
-# 	b[-1] = a[0]
-# 	for i in prange(len(a)-1):
-# 		b[i] = a[i+1]
-
-# b_numba = np.zeros(N, np.uint32)
-# start_cpu = time.time()
-# cpu_left_rotation(a_cpu, b_numba)
-# end_cpu = time.time()
-# cpu_time = end_cpu - start_cpu
-# print("Elapsed time on CPU using Numba (sec): ", cpu_time)
-# print("---------------------")
-
-# #################### Validation
-# dif = np.sum(b_cpu != b_numba)
-# print("Validation: there are %d different element(s)!" % dif)
-# print("---------------------")

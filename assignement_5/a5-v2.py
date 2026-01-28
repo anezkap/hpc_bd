@@ -72,21 +72,3 @@ for i in range(N):
         dif += 1
 print("Validation: there are %d different element(s)! " % dif)
 print("---------------------")
-
-
-#################### Sequential move on CPU for validation and comparison
-# b_seq = np.zeros(N, np.uint32)
-# start_cpu = time.time()
-# b_seq = np.roll(a_cpu, -1)
-# end_cpu = time.time()
-# cpu_time = end_cpu - start_cpu
-# print("Elapsed time using CPU sequential for-loop (sec): ", cpu_time)
-# print("---------------------")
-
-# ################### Validation
-# dif = 0
-# for i in range(N):
-#     if b_cpu[i] != b_seq[i]:
-#         dif += 1
-# print("Validation: there are %d different element(s)! " % dif)
-# print("---------------------")
