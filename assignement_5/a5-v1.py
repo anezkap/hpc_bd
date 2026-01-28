@@ -96,7 +96,7 @@ print("---------------------")
 # print("Validation: there are %d different element(s)! " % dif)
 # print("---------------------")
 
-#################### Numba CPU parallel addition
+#################### Numba CPU parallel left rotation
 # @njit(parallel=True)
 # def cpu_left_rotation(a, b):
 # 	b[-1] = a[0]

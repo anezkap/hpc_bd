@@ -76,3 +76,23 @@ for i in range(N):
         dif += 1
 print("Validation: there are %d different element(s)! " % dif)
 print("---------------------")
+
+
+#################### Sequential move on CPU for comparison using vector operations
+# b_seq = np.zeros(N, np.uint32)
+# start_cpu = time.time()
+# b_seq[-1] = a_cpu[0]
+# b_seq[:-1] = a_cpu[1:]
+# end_cpu = time.time()
+# cpu_time = end_cpu - start_cpu
+# print("Elapsed time using CPU vector operations (sec): ", cpu_time)
+# print("---------------------")
+
+#################### Sequential move on CPU for comparison using numpy roll
+# b_seq = np.zeros(N, np.uint32)
+# start_cpu = time.time()
+# b_seq = np.roll(a_cpu, -1)
+# end_cpu = time.time()
+# cpu_time = end_cpu - start_cpu
+# print("Elapsed time using CPU numpy roll (sec): ", cpu_time)
+# print("---------------------")
