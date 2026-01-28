@@ -1,63 +1,67 @@
 #!/bin/bash
 # Specifies the script should be run using the bash shell
 
-# Allocates a maximum runtime of 15 minutes for the job
-#SBATCH --time=00:15:00 
+# Allocates a maximum runtime of 10 minutes for the job
+#SBATCH --time=00:01:00
 
-# Requests 2 nodes for the job #SBATCH -N 2 
+# Requests 1 nodes for the job
+#SBATCH -N 1
 
-# Allocates 2 tasks (processes) per node
-#SBATCH --ntasks-per-node=2 
+# Allocates 64 tasks (processes) per node
+#SBATCH --ntasks-per-node=8
 
 # Sources the system-wide bash configuration file
-. /etc/bashrc 
+. /etc/bashrc
 
-# Loads the environment module system configuration  
+# Loads the environment module system configuration
+
 
 # Loads the OpenMPI module built with GCC for 64-bit systems
 module load 2025
-module load MPICH/4.3.0-GCC-14.2.0  
+module load MPICH/4.3.0-GCC-14.2.0
 
 # Check if the argument is "clean"
-if [[ "$1" == "clean" ]]; then    
-  echo "Cleaning up executable files..."    
-  rm -f HPC_BD_assignement3_18582431_15884392    
-  echo "Executable files removed."     
-  exit 0  # Exit after cleanup if only cleanup is requested 
-fi  
-
-# Defines the application to execute (path to the executable)
-APP=$1 
-
-# compile the application  
-echo "compiling application: $APP"
-mpicc -O2 -o $APP  $APP.c ghost_exchange_neighbours.c 
+if [[ "$1" == "clean" ]]; then
+    echo "Cleaning up executable files..."
+    rm -f HPC_BD_assignement3_18582431_15884392
+    echo "Executable files removed."
+    exit 0  # Exit after cleanup if only cleanup is requested
+fi
 
 # Check if the application argument is provided
 if [ -z "$1" ]; then
-  echo "Error: No application provided. Usage: $0 <application_path>" 
+  echo "Error: No application provided. Usage: $0 <application_path>"
   exit 1
-fi 
+fi
+
+# Defines the application to execute (path to the executable)
+APP=$1
+
+# compile the application  
+echo "compiling application: $APP"
+mpicc -O2 -o $APP  $APP.c ghost_exchange_neighbours.c
 
 # Sets arguments for the application (currently empty)
-ARGS="" 
-
-# Optional OpenMPI options (commented out here); the example disables `usnic` transport
-#OMPI_OPTS="--mca btl ^usnic" 
-
+ARGS=""
 
 # Defines the MPI run command to use for launching the application
-MPI_RUN=mpirun 
-
-# Prints the MPI run command for verification
-echo $MPI_RUN 
+MPI_RUN=mpirun
 
 # Prints the application being run for verification
-echo "Running application: $APP" 
+echo "Running application: $APP"
+
+export OMP_NUM_THREADS=1
 
 # Print the resources allocated- debuggin purpose - try to check if SLURM env variable are set
 echo "Allocated tasks: $SLURM_NTASKS"
-echo "Tasks per node: $SLURM_NTASKS_PER_NODE" 
+echo "Tasks per node: $SLURM_NTASKS_PER_NODE"
+
+mpirun -np 8 ./$APP $ARGS
 
 # Executes the application using the MPI run command with specified options and arguments
-$MPI_RUN -np 4 $OMPI_OPTS ./$APP $ARGS
+# echo  
+# for ((ncores=1; ncores<=4; ncores*=2)); do  # TODO update loop
+# echo "CPUS: " $ncores
+  # mpirun -np $ncores ./$APP $ARGS
+# echo "DONE "
+# done

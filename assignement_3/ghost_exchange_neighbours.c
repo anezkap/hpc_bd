@@ -4,11 +4,19 @@
 *   This program has two functions:
 *   1) Get the neighbouring ranks of each process in a 2D Cartesian topology.
 *   2) Exchange ghost cells with their neighbours using MPI derived datatypes.
+*   3) Calculate the number of live cells in a given matrix (excluding ghost cells).
 ******************************************************************************/
 #include "mpi.h"
 #include <stdio.h>
 #include <stdlib.h>
 
+/**
+ * get_nbours: Get the neighbouring ranks of a process in a 2D grid
+ * @param pid: Process ID (rank)
+ * @param m: Number of process rows in the grid
+ * @param n: Number of process columns in the grid
+ * @return: Pointer to array of 4 neighbours [left, right, top, bottom], or NULL on error
+ */
 int *get_nbours (int pid, int m, int n)
 {
   int *neighbours = (int *)malloc(4 * sizeof(int));
@@ -24,6 +32,7 @@ int *get_nbours (int pid, int m, int n)
 
 void send_side_columns(int *matrix, int num_rows, int num_cols, int *neighbours, MPI_Request *reqs, int *r)
 {
+  // Create MPI derived datatype for side columns and send to neighbours
   int array_of_sizes[2] = {num_rows, num_cols};
   int array_of_subsizes[2] = {num_rows - 2, 1};
   int array_of_starts[2];
@@ -53,6 +62,7 @@ void send_side_columns(int *matrix, int num_rows, int num_cols, int *neighbours,
 
 void receive_side_columns(int *matrix, int num_rows, int num_cols, int *neighbours, MPI_Request *reqs, int *r)
 {
+  // Create MPI derived datatype for side columns and receive from neighbours
   int array_of_sizes[2] = {num_rows, num_cols};
   int array_of_subsizes[2] = {num_rows - 2, 1};
   int array_of_starts[2];
@@ -83,6 +93,7 @@ void receive_side_columns(int *matrix, int num_rows, int num_cols, int *neighbou
 
 void receive_bottom_top_columns(int *matrix, int num_rows, int num_cols, int *neighbours, MPI_Request *reqs, int *r)
 {
+  // Create MPI derived datatype for top and bottom rows and receive from neighbours
   int array_of_sizes[2] = {num_rows, num_cols};
   int array_of_subsizes[2] = {1, num_cols};
   int array_of_starts[2];
@@ -113,6 +124,7 @@ void receive_bottom_top_columns(int *matrix, int num_rows, int num_cols, int *ne
 
 void send_bottom_top_columns(int *matrix, int num_rows, int num_cols, int *neighbours, MPI_Request *reqs, int *r)
 {
+  // Create MPI derived datatype for top and bottom rows and send to neighbours
   int array_of_sizes[2] = {num_rows, num_cols};
   int array_of_subsizes[2] = {1, num_cols};
   int array_of_starts[2];
@@ -141,6 +153,13 @@ void send_bottom_top_columns(int *matrix, int num_rows, int num_cols, int *neigh
   }
 }
 
+/**
+ * exchange_ghost_cells: Exchange ghost cells with neighbouring processes in a 2D grid
+ * @param matrix: Pointer to the (sub)matrix data (includes ghost cells)
+ * @param num_rows: Number of rows in the local matrix (including ghost cells)
+ * @param num_cols: Number of columns in the local matrix (including ghost cells)
+ * @param neighbours: Array of 4 neighbouring process ranks [left, right, top, bottom]
+ */
 void exchange_ghost_cells(int *matrix, int num_rows, int num_cols, int *neighbours)
 {
   // Create requests array and counter
@@ -172,7 +191,13 @@ void exchange_ghost_cells(int *matrix, int num_rows, int num_cols, int *neighbou
   MPI_Waitall(r, reqs, MPI_STATUSES_IGNORE);
 }
 
-
+/**
+ * calculate_number_live_cells: Count the number of live cells in a matrix
+ * @param matrix: Pointer to the (sub)matrix data (includes ghost cells)
+ * @param num_rows: Number of rows in the (sub)matrix (including ghost cells)
+ * @param num_cols: Number of columns in the (sub)matrix (including ghost cells)
+ * @return: Number of live cells in the non-ghost region, or 0 if matrix is NULL
+ */
 int calculate_number_live_cells(int *matrix, int num_rows, int num_cols)
 {
   // Returns the number of live cells in the matrix excluding ghost cells
