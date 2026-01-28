@@ -1,14 +1,14 @@
 #!/bin/bash
 # Specifies the script should be run using the bash shell
 
-# Allocates a maximum runtime of 15 minutes for the job
-#SBATCH --time=00:15:00
+# Allocates a maximum runtime of 10 minutes for the job
+#SBATCH --time=00:10:00
 
-# Requests 2 nodes for the job
-#SBATCH -N 2
+# Requests 1 nodes for the job
+#SBATCH -N 1
 
-# Allocates 2 tasks (processes) per node
-#SBATCH --ntasks-per-node=128
+# Allocates 64 tasks (processes) per node
+#SBATCH --ntasks-per-node=64
 
 # Sources the system-wide bash configuration file
 . /etc/bashrc
